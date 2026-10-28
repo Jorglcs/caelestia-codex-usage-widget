@@ -3,7 +3,8 @@
         width: Tokens.sizes.session.button
         height: Tokens.sizes.session.button
         radius: width / 2
-        color: Colours.tPalette.m3surfaceContainer
+        color: codexMouse.containsMouse ? Colours.palette.m3surfaceContainerHigh : Colours.tPalette.m3surfaceContainer
+        Behavior on color { ColorAnimation { duration: 220 } }
         property var limits: ({})
 
         function details(window, label) {
@@ -16,14 +17,21 @@
         Canvas {
             id: usageRing
             anchors.fill: parent
+            scale: codexMouse.containsMouse ? 1.05 : 1
+            Behavior on scale { NumberAnimation { duration: 220; easing.type: Easing.OutCubic } }
             property color trackColor: Colours.palette.m3surfaceVariant
             property color progressColor: Colours.palette.m3primary
+            property real progress: {
+                const primary = codexUsage.limits.primary;
+                return primary && typeof primary.usedPercent === "number"
+                    ? Math.max(0, Math.min(100, primary.usedPercent)) / 100 : 0;
+            }
+            Behavior on progress {
+                NumberAnimation { duration: 900; easing.type: Easing.OutCubic }
+            }
+            onProgressChanged: requestPaint()
             onTrackColorChanged: requestPaint()
             onProgressColorChanged: requestPaint()
-            Connections {
-                target: codexUsage
-                function onLimitsChanged() { usageRing.requestPaint(); }
-            }
             onPaint: {
                 const ctx = getContext("2d");
                 ctx.reset();
@@ -37,15 +45,11 @@
                 ctx.beginPath();
                 ctx.arc(cx, cy, radius, 0, 2 * Math.PI);
                 ctx.stroke();
-                const primary = codexUsage.limits.primary;
-                if (primary && typeof primary.usedPercent === "number") {
-                    const progress = Math.max(0, Math.min(100, primary.usedPercent)) / 100;
-                    if (progress > 0) {
-                        ctx.strokeStyle = progressColor;
-                        ctx.beginPath();
-                        ctx.arc(cx, cy, radius, -Math.PI / 2, -Math.PI / 2 + 2 * Math.PI * progress);
-                        ctx.stroke();
-                    }
+                if (progress > 0) {
+                    ctx.strokeStyle = progressColor;
+                    ctx.beginPath();
+                    ctx.arc(cx, cy, radius, -Math.PI / 2, -Math.PI / 2 + 2 * Math.PI * progress);
+                    ctx.stroke();
                 }
             }
         }
@@ -62,15 +66,26 @@
 
         MouseArea { id: codexMouse; anchors.fill: parent; hoverEnabled: true }
         Controls.ToolTip {
+            id: codexTooltip
             visible: codexMouse.containsMouse
             delay: 300
             padding: 12
+            enter: Transition {
+                NumberAnimation { property: "opacity"; from: 0; to: 1; duration: 180; easing.type: Easing.OutCubic }
+            }
+            exit: Transition {
+                NumberAnimation { property: "opacity"; to: 0; duration: 120 }
+            }
             background: Rectangle {
                 color: Colours.palette.m3surfaceContainerHigh
                 radius: 12
             }
             contentItem: Column {
                 spacing: 10
+                transform: Translate {
+                    y: codexTooltip.visible ? 0 : 5
+                    Behavior on y { NumberAnimation { duration: 220; easing.type: Easing.OutCubic } }
+                }
                 UsageDetails { window: codexUsage.limits.primary; label: "5 horas" }
                 UsageDetails { window: codexUsage.limits.secondary; label: "Semana" }
             }
@@ -90,7 +105,10 @@
                 visible: parent.window && typeof parent.window.usedPercent === "number"
                 Rectangle {
                     height: parent.height
-                    width: parent.width * Math.max(0, Math.min(100, parent.parent.window?.usedPercent ?? 0)) / 100
+                    width: codexTooltip.visible ? parent.width * Math.max(0, Math.min(100, parent.parent.window?.usedPercent ?? 0)) / 100 : 0
+                    Behavior on width {
+                        NumberAnimation { duration: 650; easing.type: Easing.OutCubic }
+                    }
                     radius: height / 2
                     color: Colours.palette.m3primary
                 }
