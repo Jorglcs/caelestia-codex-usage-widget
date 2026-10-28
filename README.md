@@ -9,7 +9,7 @@ Indicador de uso do Codex para o menu de sessão do Caelestia Shell. O anel most
 ### Imagens
 
 <!-- Adicione uma captura em assets/ e insira aqui: ![Widget](assets/widget.png) -->
-Veja [assets/README.md](assets/README.md) para adicionar capturas de tela.
+![Widget](assets/widget.png)
 
 ### Requisitos
 
