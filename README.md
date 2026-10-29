@@ -9,7 +9,7 @@ Indicador de uso do Codex para o menu de sessão do Caelestia Shell. O anel most
 ### Imagens
 
 <!-- Adicione uma captura em assets/ e insira aqui: ![Widget](assets/widget.png) -->
-![Widget](assets/widget.png)
+![Widget](assets/contador-chatgpt-cortado.gif)
 
 ### Requisitos
 
@@ -45,7 +45,7 @@ A Codex usage indicator for the Caelestia Shell session menu. The ring shows pri
 ### Screenshots
 
 <!-- Add a screenshot to assets/ and insert it here: ![Widget](assets/widget.png) -->
-See [assets/README.md](assets/README.md) to add screenshots.
+![Widget](assets/contador-chatgpt-cortado.gif)
 
 ### Requirements
 
